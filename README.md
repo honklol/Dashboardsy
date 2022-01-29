@@ -37,8 +37,8 @@ Now do the following to configure nginx.
 `systemctl start nginx`  
 `certbot certonly --nginx -d your.domain.com`  
 `cd /etc/nginx/conf.d`  
-`touch nextbin.conf`  
-`nano nextbin.conf`  
+`touch dashboardsy.conf`  
+`nano dashboardsy.conf`  
 Now paste the following:  
 ```nginx
 server {
