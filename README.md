@@ -3,6 +3,10 @@
 A modern client panel for pterodactyl, made by Wrible Development.   
 Support Discord: [https://discord.gg/zVcDkSZNu7](https://discord.gg/zVcDkSZNu7)
 
+## Screenshots
+![homepage](https://cdn.discordapp.com/attachments/698854005987868692/937083265637023745/uu71hEpP.png)      
+![createserver](https://cdn.discordapp.com/attachments/698854005987868692/937083791917338639/2R7I34rw.png)
+
 ## Setting up
 This guide is only for debian-based distributions of GNU/Linux.   
 This is fairly easy to install, first install NodeJS 16 via the following commands (run them as root):   
