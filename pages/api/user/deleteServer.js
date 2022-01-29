@@ -2,6 +2,7 @@ import { getToken } from "next-auth/jwt"
 import { executeQuery, getServers } from '../../../db'
 import config from '../../../config.json'
 import Axios from 'axios'
+import { delCache } from '../../../lib/cache'
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
