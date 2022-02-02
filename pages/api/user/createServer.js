@@ -84,7 +84,7 @@ export default async function handler(req, res) {
         return res.status(resd.status).json({ message: `${resd.status} Error!`, error: true });
     }
     if (config.renewal.enabled) {
-        await executeQuery("INSERT INTO renewals (uid, serverid, renewaldate) VALUES (?, ?, ?)", [session.sub, resd.data.attributes.id, (new Date().getTime() + (/*config.renewal.daystorenewafter * 24 * 60 **/ 60 * 1000))]);
+        await executeQuery("INSERT INTO renewals (uid, serverid, renewaldate) VALUES (?, ?, ?)", [session.sub, resd.data.attributes.id, (new Date().getTime() + (config.renewal.daystorenewafter * 24 * 60 * 60 * 1000))]);
     }
     delCache(`servers:${session.sub}`);
     return res.status(200).json({ "message": "200 OK", error: false });
