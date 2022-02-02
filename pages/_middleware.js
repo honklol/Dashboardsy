@@ -17,6 +17,10 @@ export async function middleware(req) {
             return new Response("You are already logged in")
         }
     }
-    if (!session) return NextResponse.redirect("/api/auth/signin")
+    if (!session) {
+        const url = req.nextUrl.clone()
+        url.pathname = '/api/auth/signin'
+        return NextResponse.rewrite(url)
+    }
     return NextResponse.next()
 }

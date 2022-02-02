@@ -10,11 +10,8 @@ import {
     Icon,
     IconButton,
     Input,
-    InputGroup,
-    InputLeftElement,
     Text,
     Select,
-    ButtonGroup,
     useColorModeValue,
     useDisclosure,
     Image,
@@ -37,8 +34,6 @@ import {
     NumberIncrementStepper,
     NumberDecrementStepper,
     FormControl,
-    FormHelperText,
-    FormErrorMessage,
     FormLabel,
     Button,
     Collapse
@@ -53,7 +48,6 @@ import { RiUDiskFill, RiLockPasswordLine } from 'react-icons/ri'
 import { GoServer } from 'react-icons/go'
 import React from "react";
 import config from '../config.json'
-import Link from 'next/link';
 
 export default function Swibc(prps) {
     const sidebar = useDisclosure();
@@ -365,6 +359,8 @@ export default function Swibc(prps) {
         <>
             <Head>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <title>{config.name}</title>
+                <link rel="icon" href="/favicon.png" />
             </Head>
             <Box
                 as="section"

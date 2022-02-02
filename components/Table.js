@@ -34,14 +34,14 @@ import {
 
 } from "@chakra-ui/react";
 import { AiFillEdit, AiTwotoneLock } from "react-icons/ai";
-import { BsBoxArrowUpRight, BsFillTrashFill } from "react-icons/bs";
+import { BsFillTrashFill } from "react-icons/bs";
 import config from '../config.json'
 import Link from 'next/link'
 
 
 
 export default function Component(props) {
-  const { data, deleteServerFunc, editServerFunc, uinfo, setMemory, setDisk, setCpu, setServerid } = props;
+  const { data, deleteServerFunc, editServerFunc, uinfo, deletionservers, setMemory, setDisk, setCpu, setServerid, renewalservers } = props;
   const rdata = Array.from(data)
   const [isOpen, setIsOpen] = React.useState(false)
   const [isOpenPopover, setIsOpenPopover] = React.useState(false)
@@ -64,7 +64,28 @@ export default function Component(props) {
     >
       <Text align="center" fontSize='4xl'>Servers</Text>
       {rdata && rdata.length > 0 ? rdata.map((tok, tid) => {
+        const second = 1000
+        const minute = second * 60
+        const hour = minute * 60
+        const day = hour * 24
         const token = JSON.parse(tok)
+        let serverdeletion, daysdeletion, hoursdeletion, minutesdeletion, timeLeftDeletion, totalTimeLeftDeletion
+        const sdeletion = deletionservers.find(x => x.serverid == token.id)
+        if (sdeletion) {
+          serverdeletion = sdeletion.deletiondate
+          timeLeftDeletion = serverdeletion - new Date().getTime()
+          daysdeletion = Math.floor(timeLeftDeletion / (day)) + " Days"
+          hoursdeletion = Math.floor((timeLeftDeletion % (day)) / (hour)) + " Hours"
+          minutesdeletion = Math.floor((timeLeftDeletion % (hour)) / (minute)) + " Minutes"
+          totalTimeLeftDeletion = `${daysdeletion} ${hoursdeletion} ${minutesdeletion}`
+        }
+        const serverrenew = renewalservers.find(x => x.serverid == token.id).renewaldate
+        const timeLeft = serverrenew - new Date().getTime()
+        let days = Math.floor(timeLeft / (day)) + " Days",
+          hours = Math.floor((timeLeft % (day)) / (hour)) + " Hours",
+          minutes = Math.floor((timeLeft % (hour)) / (minute)) + " Minutes"
+
+        let totalTimeLeft = `${days} ${hours} ${minutes}`
         return (
           <Flex
             direction={{ base: "row", md: "column" }}
@@ -82,8 +103,7 @@ export default function Component(props) {
               spacingX={160}
             >
               <span>{token.name}</span>
-              <span style={{ display: "none" }} className={"serveridr"}>{token.id}</span>
-              <span>Ram: {token.limits.memory}, CPU: {token.limits.cpu}, Disk: {token.limits.disk}</span>
+              {config.renewal.enabled ? serverdeletion ? <span>Server will be deleted in {totalTimeLeftDeletion} if you don't get {config.renewal.costtorenew} coins.</span> : <span>Time left to renew: {totalTimeLeft}</span> : <span>Ram: {token.limits.memory}, CPU: {token.limits.cpu}, Disk: {token.limits.disk}</span>}
               <Flex>
                 <Link href={'https://' + config.panel_url + '/server/' + token.identifier}>
                   <a>

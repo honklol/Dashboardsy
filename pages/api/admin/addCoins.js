@@ -1,11 +1,12 @@
-import { getToken } from "next-auth/jwt"
 import { executeQuery } from '../../../db'
 import config from '../../../config.json'
-import Axios from 'axios'
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ message: '405 Method not allowed', error: true });
+    }
+    if (req.headers.authorization !== config.adminapi.apikey) {
+        return new Response('{ "message": "403 Forbidden", "error": true }')
     }
     if (!req.body.userid || !req.body.coins) {
         return res.status(400).json({ message: '400 Bad Request', error: true });

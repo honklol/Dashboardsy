@@ -43,7 +43,7 @@ Now do the following to configure nginx.
 `cd /etc/nginx/conf.d`  
 `touch dashboardsy.conf`  
 `nano dashboardsy.conf`  
-Now paste the following:  
+Now paste the following:   
 ```nginx
 server {
     listen 80;
@@ -69,6 +69,24 @@ location / {
 Make sure to replace `<domain>` with the domain.  
 Now run `systemctl restart nginx` and you should be good to go.
 
+### Renewal System
+
+Setting up the renewal system is pretty easy if you have basic linux knowledge.   
+Edit config.json, enable the dashboardsy api and set an api key, this api key should be over 32 characters and must not include exclamation marks, Also setup the renewal config if you haven't done that already.   
+Then run `echo 'curl -H "Authorization: DASHBOARDSY API KEY FROM CONFIG.JSON" "http://localhost:3000/api/admin/cron"' > /dashboardsy-cron.sh` as root and then run `chmod +x /dashboardsy-cron.sh` also as root.   
+Then run `EDITOR=nano crontab -e` and paste the following line over there:
+```cron
+*/5 * * * * /dashboardsy-cron.sh
+```
+
+## Updating
+Updating dashboardsy is simple, just cd to the directory where you cloned it, run   
+```sh
+git pull
+npm run build
+pm2 restart dashboardsy
+```   
+That's it!
 ## File Structure
 ```
 .

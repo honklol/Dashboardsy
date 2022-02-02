@@ -12,7 +12,7 @@ import Layout from '../components/Layout';
 
 
 export default function index(pgProps) {
-    const { username, avatar, servers, uinfo } = pgProps;
+    const { username, avatar, servers, uinfo, renewalservers, deletionservers } = pgProps;
     const isMobile = useIsTouchDevice()
     const [memory, setMemory] = useState(false);
     const [disk, setDisk] = useState(false);
@@ -137,24 +137,31 @@ export default function index(pgProps) {
         if (s.status !== 200) {
             return notify("An error occurred: " + res.message, true);
         } else {
-            return notify("Your new password is:  " + res.data.password , "password")
+            return notify("Your new password is:  " + res.data.password, "password")
         }
     }
     return (
         <Layout {...pgProps} buyItemFunc={buyItemFunc} regenPass={regenPass} uinfo={uinfo} createServerFunc={createServerFunc} notify={notify}>
             <Heading align="center">Howdy {username}!</Heading>
-            <Flex direction={"column"} justifyContent={"center"} alignItems={"center"}>
+            {isMobile ? <Flex direction={"column"} justifyContent={"center"} alignItems={"center"}>
                 <Flex direction={"row"} justifyContent={"center"} alignItems={"center"}>
-                    {isMobile ? <Card property={"CPU Limit"} description={uinfo.used.cpu + "/" + uinfo.cpu} my="4" size={145} /> : <Card property={"CPU Limit"} description={uinfo.used.cpu + "/" + uinfo.cpu} my="4" size={300} />}
-                    {isMobile ? <Card property={"Memory Limit"} description={uinfo.used.memory + "/" + uinfo.memory} my="4" size={145} /> : <Card property={"Memory Limit"} description={uinfo.used.memory + "/" + uinfo.memory} my="4" size={300} />}
+                    <Card property={"CPU Limit"} description={uinfo.used.cpu + "/" + uinfo.cpu} my="4" size={145} />
+                    <Card property={"Memory Limit"} description={uinfo.used.memory + "/" + uinfo.memory} my="4" size={145} />
                 </Flex>
                 <Flex direction={"row"} justifyContent={"center"} alignItems={"center"}>
-                    {isMobile ? <Card property={"Disk Limit"} description={uinfo.used.disk + "/" + uinfo.disk} my="4" size={145} /> : <Card property={"Disk Limit"} description={uinfo.used.disk + "/" + uinfo.disk} my="4" size={300} />}
-                    {isMobile ? <Card property={"Server Limit"} description={uinfo.used.serverlimit + "/" + uinfo.serverlimit} my="4" size={145} /> : <Card property={"Server Limit"} description={uinfo.used.serverlimit + "/" + uinfo.serverlimit} my="4" size={300} />}
+                    <Card property={"Disk Limit"} description={uinfo.used.disk + "/" + uinfo.disk} my="4" size={145} />
+                    <Card property={"Server Limit"} description={uinfo.used.serverlimit + "/" + uinfo.serverlimit} my="4" size={145} />
                 </Flex>
-            </Flex>
-            <Table data={servers.map(s => JSON.stringify({ name: s.attributes.name, id: s.attributes.id, identifier: s.attributes.identifier, limits: s.attributes.limits }))} deleteServerFunc={deleteServerFunc} uinfo={uinfo} editServerFunc={editServerFunc} setMemory={setMemory} setCpu={setCpu} setDisk={setDisk} setServerid={setServerid}  />
-            <ToastContainer/>
+            </Flex> :
+                <Flex direction={"row"} justifyContent={"center"} alignItems={"center"}>
+                    <Card property={"CPU Limit"} description={uinfo.used.cpu + "/" + uinfo.cpu} my="4" size={300} />
+                    <Card property={"Memory Limit"} description={uinfo.used.memory + "/" + uinfo.memory} my="4" size={300} />
+                    <Card property={"Disk Limit"} description={uinfo.used.disk + "/" + uinfo.disk} my="4" size={300} />
+                    <Card property={"Server Limit"} description={uinfo.used.serverlimit + "/" + uinfo.serverlimit} my="4" size={300} />
+                </Flex>
+            }
+            <Table data={servers.map(s => JSON.stringify({ name: s.attributes.name, id: s.attributes.id, identifier: s.attributes.identifier, limits: s.attributes.limits }))} deleteServerFunc={deleteServerFunc} uinfo={uinfo} editServerFunc={editServerFunc} setMemory={setMemory} setCpu={setCpu} setDisk={setDisk} setServerid={setServerid} renewalservers={renewalservers} deletionservers={deletionservers} />
+            <ToastContainer />
         </Layout>
     )
 }
@@ -213,8 +220,11 @@ export async function getServerSideProps({ req, res }) {
             disk: disk - useddisk
         }
     }
-
+    const rs = await executeQuery("SELECT * FROM renewals WHERE uid = ?", [session.sub])
+    const renewalservers = rs.map(r => JSON.parse(JSON.stringify(r)))
+    const ds = await executeQuery("SELECT * FROM deletions WHERE uid = ?", [session.sub])
+    const deletionservers = ds.map(r => JSON.parse(JSON.stringify(r)))
     return {
-        props: { username, avatar, servers, uinfo },
+        props: { username, avatar, servers, uinfo, renewalservers, deletionservers },
     }
 }

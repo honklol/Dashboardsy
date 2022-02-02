@@ -46,3 +46,5 @@ export async function getServers(discord_userid) {
 executeQuery("CREATE TABLE IF NOT EXISTS resources(uid VARCHAR(255), cpu VARCHAR(255), memory VARCHAR(255), disk VARCHAR(255), coins VARCHAR(255), serverlimit VARCHAR(255), ptero_uid VARCHAR(255));")
 executeQuery("CREATE TABLE IF NOT EXISTS usedresources(uid VARCHAR(255), cpu VARCHAR(255), memory VARCHAR(255), disk VARCHAR(255), ptero_uid VARCHAR(255));")
 executeQuery("CREATE TABLE IF NOT EXISTS j4r(uid VARCHAR(255), guildid VARCHAR(255), claimed VARCHAR(255));")
+executeQuery("CREATE TABLE IF NOT EXISTS renewals(uid VARCHAR(255), serverid VARCHAR(255), renewaldate VARCHAR(255));")
+executeQuery("CREATE TABLE IF NOT EXISTS deletions(uid VARCHAR(255), serverid VARCHAR(255), deletiondate VARCHAR(255));")

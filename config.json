@@ -64,5 +64,14 @@
             "coins": 500
          }
       ]
+   },
+   "renewal": {
+      "enabled": true,
+      "_comment": "after how many days to cut the coins for the server renewal, if the user does not have enough coins, suspend the server.",
+      "daystorenewafter": 7,
+      "costtorenew": 100,
+      "_comment2": "if true, the suspended servers will be deleted after the days you mentioned below if the user still doesn not have enough coins",
+      "automaticallydeleteservers": true,
+      "deleteserverafterhowmanydays": 7 
    }
 }
