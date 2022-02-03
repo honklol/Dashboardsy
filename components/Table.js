@@ -69,23 +69,25 @@ export default function Component(props) {
         const hour = minute * 60
         const day = hour * 24
         const token = JSON.parse(tok)
-        let serverdeletion, daysdeletion, hoursdeletion, minutesdeletion, timeLeftDeletion, totalTimeLeftDeletion
-        const sdeletion = deletionservers.find(x => x.serverid == token.id)
-        if (sdeletion) {
-          serverdeletion = sdeletion.deletiondate
-          timeLeftDeletion = serverdeletion - new Date().getTime()
-          daysdeletion = Math.floor(timeLeftDeletion / (day)) + " Days"
-          hoursdeletion = Math.floor((timeLeftDeletion % (day)) / (hour)) + " Hours"
-          minutesdeletion = Math.floor((timeLeftDeletion % (hour)) / (minute)) + " Minutes"
-          totalTimeLeftDeletion = `${daysdeletion} ${hoursdeletion} ${minutesdeletion}`
+        let serverdeletion, daysdeletion, hoursdeletion, minutesdeletion, timeLeftDeletion, totalTimeLeftDeletion, sdeletion, serverrenew, totalTimeLeft
+        if (config.renewal.enabled) {
+          sdeletion = deletionservers.find(x => x.serverid == token.id)
+          if (sdeletion) {
+            serverdeletion = sdeletion.deletiondate
+            timeLeftDeletion = serverdeletion - new Date().getTime()
+            daysdeletion = Math.floor(timeLeftDeletion / (day)) + " Days"
+            hoursdeletion = Math.floor((timeLeftDeletion % (day)) / (hour)) + " Hours"
+            minutesdeletion = Math.floor((timeLeftDeletion % (hour)) / (minute)) + " Minutes"
+            totalTimeLeftDeletion = `${daysdeletion} ${hoursdeletion} ${minutesdeletion}`
+          }
+          serverrenew = renewalservers.find(x => x.serverid == token.id).renewaldate
+          const timeLeft = serverrenew - new Date().getTime()
+          let days = Math.floor(timeLeft / (day)) + " Days",
+            hours = Math.floor((timeLeft % (day)) / (hour)) + " Hours",
+            minutes = Math.floor((timeLeft % (hour)) / (minute)) + " Minutes"
+  
+          totalTimeLeft = `${days} ${hours} ${minutes}`
         }
-        const serverrenew = renewalservers.find(x => x.serverid == token.id).renewaldate
-        const timeLeft = serverrenew - new Date().getTime()
-        let days = Math.floor(timeLeft / (day)) + " Days",
-          hours = Math.floor((timeLeft % (day)) / (hour)) + " Hours",
-          minutes = Math.floor((timeLeft % (hour)) / (minute)) + " Minutes"
-
-        let totalTimeLeft = `${days} ${hours} ${minutes}`
         return (
           <Flex
             direction={{ base: "row", md: "column" }}

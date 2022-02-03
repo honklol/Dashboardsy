@@ -1,6 +1,7 @@
 import { executeQuery } from '../../../db'
 import config from '../../../config.json'
 import Axios from 'axios';
+import { sendLog } from '../../../webhook';
 
 export default async function handler(req, res) {
     if (req.method !== 'GET') {
@@ -12,9 +13,9 @@ export default async function handler(req, res) {
     if (config.renewal.enabled == true) {
         const pterores = await Axios.get(`https://${config.panel_url}/api/application/servers?per_page=10000`, {
             headers: {
-              "Authorization": `Bearer ${config.panel_apikey}`
+                "Authorization": `Bearer ${config.panel_apikey}`
             }
-          })
+        })
         const servers = pterores.data.data
         const sqlres = JSON.parse(JSON.stringify(await executeQuery("SELECT * FROM renewals;")))
         const currentdate = new Date().getTime()
@@ -38,15 +39,17 @@ export default async function handler(req, res) {
                         }).catch(e => console.log(e.response.data.errors))
                         if (suspendres.status !== 204) {
                             console.error("Error suspending server with id: " + serverid)
+                        } else {
+                            await sendLog("Suspended Server", { "name": "CRON JOB", "sub": sqlruser[0].uid }, `Server ID: ${serverid}`)
                         }
                     }
                     if (config.renewal.automaticallydeleteservers) {
-                        const ifdeletionexists =  await executeQuery("SELECT * FROM deletions WHERE serverid = ?", [serverid])
+                        const ifdeletionexists = await executeQuery("SELECT * FROM deletions WHERE serverid = ?", [serverid])
                         if (!ifdeletionexists || ifdeletionexists.length == 0) {
                             await executeQuery("INSERT INTO deletions (uid, serverid, deletiondate) VALUES (?, ?, ?)", [sqlruser[0].uid, serverid, currentdate + (config.renewal.deleteserverafterhowmanydays * 24 * 60 * 60 * 1000)])
                         }
                     }
-                    await executeQuery("UPDATE renewals SET renewaldate = ? WHERE serverid = ?", [(currentdate + (1*60*60*1000)), serverid])
+                    await executeQuery("UPDATE renewals SET renewaldate = ? WHERE serverid = ?", [(currentdate + (1 * 60 * 60 * 1000)), serverid])
                 } else {
                     if (server.attributes.suspended == true) {
                         const unsuspendres = await Axios.post(`https://${config.panel_url}/api/application/servers/${serverid}/unsuspend`, {}, {
@@ -75,6 +78,12 @@ export default async function handler(req, res) {
         const currentdate = new Date().getTime()
         sqlres.forEach(async s => {
             if (s.deletiondate <= currentdate) {
+                const serverdata = await Axios.get(`https://${config.panel_url}/api/application/servers/${s.serverid}`,)
+                const useridowner = serverdata.data.attributes.user
+                const sqlruser = await executeQuery("SELECT * FROM resources WHERE ptero_uid = ?", [useridowner])
+                if (sqlruser.length == 0 || !sqlruser) {
+                    return;
+                }
                 await executeQuery("DELETE FROM deletions WHERE serverid = ?", [s.serverid])
                 await executeQuery("DELETE FROM renewals WHERE serverid = ?", [s.serverid])
                 await Axios.delete(`https://${config.panel_url}/api/application/servers/${s.serverid}`, {
@@ -82,6 +91,8 @@ export default async function handler(req, res) {
                         "Authorization": `Bearer ${config.panel_apikey}`
                     }
                 })
+                await sendLog("Deleted Server", { "name": "CRON JOB", "sub": sqlruser[0].uid }, `Server ID: ${s.serverid}`)
+                await executeQuery("UPDATE usedresources SET cpu = cpu - ?, memory = memory - ?, disk = disk - ? WHERE uid = ?", [serverdata.attributes.limits.cpu, serverdata.attributes.limits.memory, serverdata.attributes.limits.disk, sqlruser[0].uid]);
             }
         })
     }

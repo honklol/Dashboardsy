@@ -3,6 +3,7 @@ import { executeQuery, getServers } from '../../../db'
 import config from '../../../config.json'
 import Axios from 'axios'
 import { delCache } from '../../../lib/cache'
+import { sendLog } from '../../../webhook';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -37,5 +38,6 @@ export default async function handler(req, res) {
         return res.status(resd.status).json({ message: `${resd.status} Error!`, error: true });
     }
     delCache(`servers:${session.sub}`);
+    await sendLog("Delete Server", session, `Server ID: ${req.body.serverid}`)
     return res.status(200).json({ "message": "Sucessful", error: false });
 }

@@ -2,6 +2,7 @@ import { getToken } from "next-auth/jwt"
 import { executeQuery, getServers } from '../../../db'
 import config from '../../../config.json'
 import Axios from 'axios'
+import { sendLog } from '../../../webhook';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -64,5 +65,6 @@ export default async function handler(req, res) {
     if (resd.status !== 200 && resd.status !== 201) {
         return res.status(resd.status).json({ message: `${resd.status} Error!`, error: true });
     }
+    await sendLog("Edit Server", session, `Server ID: ${req.body.serverid}`)
     return res.status(200).json({ "message": "200 OK", error: false });
 }

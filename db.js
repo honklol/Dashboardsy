@@ -43,6 +43,17 @@ export async function getServers(discord_userid) {
   }
 }
 
+export async function getCoinsLeaderboard() {
+  const ifcacheexists = await getCache('coinsleaderboard');
+  if (ifcacheexists != false) {
+    return ifcacheexists;
+  }
+  const clb = await executeQuery("SELECT * FROM resources ORDER BY coins DESC LIMIT 10;")
+  const coinslb = clb.map(r => JSON.parse(JSON.stringify(r)))
+  setCache('coinsleaderboard', coinslb, 300);
+  return coinslb;
+}
+
 executeQuery("CREATE TABLE IF NOT EXISTS resources(uid VARCHAR(255), cpu VARCHAR(255), memory VARCHAR(255), disk VARCHAR(255), coins VARCHAR(255), serverlimit VARCHAR(255), ptero_uid VARCHAR(255));")
 executeQuery("CREATE TABLE IF NOT EXISTS usedresources(uid VARCHAR(255), cpu VARCHAR(255), memory VARCHAR(255), disk VARCHAR(255), ptero_uid VARCHAR(255));")
 executeQuery("CREATE TABLE IF NOT EXISTS j4r(uid VARCHAR(255), guildid VARCHAR(255), claimed VARCHAR(255));")

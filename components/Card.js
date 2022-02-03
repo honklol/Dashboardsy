@@ -4,8 +4,6 @@ import React from "react";
 import {
   chakra,
   Box,
-
-  Flex,
   useColorModeValue,
 } from "@chakra-ui/react";
 

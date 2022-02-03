@@ -3,6 +3,7 @@ import DiscordProvider from "next-auth/providers/discord";
 import Axios from 'axios';
 import config from '../../../config.json';
 import { executeQuery } from '../../../db';
+import { sendLog } from '../../../webhook';
 
 export default NextAuth({
     secret: process.env.SECRET_COOKIE_PASSWORD,
@@ -19,6 +20,7 @@ export default NextAuth({
     },
     callbacks: {
         async jwt({ token, account }) {
+            await sendLog("User Logged In", token, "None")
             const sqlresourc = await executeQuery("SELECT * FROM resources WHERE uid = ?", [token.sub])
             if (sqlresourc == false || sqlresourc.length == 0) {
                 return token

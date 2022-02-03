@@ -14,6 +14,7 @@ import {
     Select,
     useColorModeValue,
     useDisclosure,
+    SimpleGrid,
     Image,
     AlertDialog,
     AlertDialogBody,
@@ -36,14 +37,15 @@ import {
     FormControl,
     FormLabel,
     Button,
-    Collapse
+    Collapse,
+    Divider
 } from "@chakra-ui/react";
 import Head from 'next/head'
 import { FaMemory } from "react-icons/fa";
 import { BsFillCpuFill } from "react-icons/bs";
 import { FiMenu } from "react-icons/fi";
-import { MdHome, MdKeyboardArrowRight, MdOutlineShoppingCart } from "react-icons/md";
-import { IoCreateSharp } from 'react-icons/io5'
+import { MdOutlineHome, MdKeyboardArrowRight, MdOutlineShoppingCart, MdOutlineLeaderboard } from "react-icons/md";
+import { FiServer } from 'react-icons/fi'
 import { RiUDiskFill, RiLockPasswordLine } from 'react-icons/ri'
 import { GoServer } from 'react-icons/go'
 import React from "react";
@@ -53,7 +55,7 @@ export default function Swibc(prps) {
     const sidebar = useDisclosure();
     let sname, mem, cpu, disk, egg, loc;
     const integrations = useDisclosure();
-    const { username, avatar, children, createServerFunc, buyItemFunc, regenPass, uinfo, notify } = prps;
+    const { username, avatar, children, createServerFunc, buyItemFunc, regenPass, uinfo, notify, coinsleaderboard } = prps;
 
     const { isOpen: isOpenCS, onOpen: onOpenCS, onClose: onCloseCS } = useDisclosure()
     const finalRefCS = React.useRef()
@@ -64,7 +66,11 @@ export default function Swibc(prps) {
     const handleChangeEgg = (event) => egg = event.target.value
     const handleChangeLoc = (event) => loc = event.target.value
 
-
+    const [isOpenAlertCoinsLeaderboard, setIsOpenAlertCoinsLeaderboard] = React.useState(false)
+    const onAlertCoinsLeaderboard = () => {
+        setIsOpenAlertCoinsLeaderboard(false)
+    }
+    const cancelRefAlertCoinsLeaderboard = React.useRef()
 
     const [isOpenAlertCpu, setIsOpenAlertCpu] = React.useState(false)
     const onCloseAlertCpu = () => {
@@ -162,10 +168,9 @@ export default function Swibc(prps) {
                 color="gray.600"
                 aria-label="Main Navigation"
             >
-                <NavItem icon={MdHome}>Home</NavItem>
-                <NavItem icon={IoCreateSharp} onClick={onOpenCS}>Create Server</NavItem>
-                <NavItem icon={MdOutlineShoppingCart} onClick={integrations.onToggle}>
-                    Shop
+                <NavItem icon={MdOutlineHome}>Home</NavItem>
+                <NavItem icon={FiServer} onClick={onOpenCS}>Create Server</NavItem>
+                <NavItem icon={MdOutlineShoppingCart} onClick={integrations.onToggle}>Shop
                     <Icon
                         as={MdKeyboardArrowRight}
                         ml="auto"
@@ -186,7 +191,8 @@ export default function Swibc(prps) {
                         Extra Servers
                     </NavItem>
                 </Collapse>
-                <NavItem icon={RiLockPasswordLine} onClick={() => regenPass()}> Regenerate Password</NavItem>
+                <NavItem icon={RiLockPasswordLine} onClick={() => regenPass()}>Regenerate Password</NavItem>
+                <NavItem icon={MdOutlineLeaderboard} onClick={() => setIsOpenAlertCoinsLeaderboard(true)}>Coins Leaderboard</NavItem>
             </Flex>
             <AlertDialog isOpen={isOpenAlertCpu} leastDestructiveRef={cancelRefAlertCpu} onClose={() => setIsOpenAlertCpu(false)}>
                 <AlertDialogOverlay>
@@ -292,7 +298,7 @@ export default function Swibc(prps) {
                                     <NumberDecrementStepper />
                                 </NumberInputStepper>
                             </NumberInput>
-                            
+
                         </FormControl>
                         <FormControl isRequired >
                             <FormLabel htmlFor="cpuinput">Amount of CPU:</FormLabel>
@@ -303,7 +309,7 @@ export default function Swibc(prps) {
                                     <NumberDecrementStepper />
                                 </NumberInputStepper>
                             </NumberInput>
-                            
+
                         </FormControl>
                         <FormControl isRequired >
                             <FormLabel htmlFor="diskinput">Amount of Disk:</FormLabel>
@@ -314,21 +320,21 @@ export default function Swibc(prps) {
                                     <NumberDecrementStepper />
                                 </NumberInputStepper>
                             </NumberInput>
-                            
+
                         </FormControl>
                         <FormControl isRequired >
                             <FormLabel htmlFor="egginput">Select the egg:</FormLabel>
                             <Select id="egginput" name="egginput" onChange={handleChangeEgg} placeholder="Select the egg">
                                 {config.eggs.map(egg => <option value={egg.key} key={egg.key}>{egg.name}</option>)}
                             </Select>
-                            
+
                         </FormControl>
                         <FormControl isRequired >
                             <FormLabel htmlFor="locinput">Select the location:</FormLabel>
                             <Select id="locinput" name="locinput" onChange={handleChangeLoc} placeholder="Select the location">
                                 {config.locations.map(location => <option key={location.key} value={location.key}>{location.name}</option>)}
                             </Select>
-                            
+
                         </FormControl>
                     </ModalBody>
                     <ModalFooter>
@@ -352,6 +358,41 @@ export default function Swibc(prps) {
                     </ModalFooter>
                 </ModalContent>
             </Modal>
+            <AlertDialog isOpen={isOpenAlertCoinsLeaderboard} leastDestructiveRef={cancelRefAlertCoinsLeaderboard} onClose={() => setIsOpenAlertCoinsLeaderboard(false)}>
+                <AlertDialogOverlay>
+                    <AlertDialogContent>
+                        <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                            Coins Leaderboard
+                        </AlertDialogHeader>
+                        <AlertDialogBody>
+                            <Flex justifyContent='space-between' mx={10}>
+                                <span>Position</span>
+                                <span>User ID</span>
+                                <span>Coins</span>
+                            </Flex>
+                            <Divider my={2} />
+                            {coinsleaderboard && coinsleaderboard.length > 0 ? coinsleaderboard.map((user, index) => {
+                                return (
+                                <>
+                                        <Flex key={index} justifyContent='space-between' mx={10}>
+                                            <span>#{index+1}</span>
+                                            <span>{user.uid}</span>
+                                            <span>{user.coins}</span>
+                                        </Flex>
+                                        {coinsleaderboard.length-1 != index ? <Divider my={2} /> : null}
+                                </>
+                                )
+                            }
+                            ) : "No users yet"}
+                        </AlertDialogBody>
+                        <AlertDialogFooter>
+                            <Button ref={cancelRefAlertMem} onClick={() => setIsOpenAlertCoinsLeaderboard(false)}>
+                                Okay!
+                            </Button>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialogOverlay>
+            </AlertDialog>
 
         </Box>
     );

@@ -3,6 +3,7 @@ import { executeQuery, getServers } from '../../../db'
 import config from '../../../config.json'
 import Axios from 'axios'
 import { delCache } from '../../../lib/cache'
+import { sendLog } from '../../../webhook';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -87,5 +88,6 @@ export default async function handler(req, res) {
         await executeQuery("INSERT INTO renewals (uid, serverid, renewaldate) VALUES (?, ?, ?)", [session.sub, resd.data.attributes.id, (new Date().getTime() + (config.renewal.daystorenewafter * 24 * 60 * 60 * 1000))]);
     }
     delCache(`servers:${session.sub}`);
+    await sendLog("Create Server", session, `Server ID: ${resd.data.attributes.id}`)
     return res.status(200).json({ "message": "200 OK", error: false });
 }

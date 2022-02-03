@@ -2,6 +2,7 @@ import { getToken } from "next-auth/jwt"
 import { executeQuery } from '../../../db'
 import config from '../../../config.json'
 import Axios from 'axios'
+import { sendLog } from '../../../webhook';
 
 export default async function handler(req, res) {
     if (req.method !== 'GET') {
@@ -36,7 +37,9 @@ export default async function handler(req, res) {
         if (somql == false) {
             return res.status(500).json({ message: '500 Internal Server Error', error: true });
         }
+        await sendLog("Create New User", session, `None`)
         return res.redirect("/")
     }
+    await sendLog("Create New User", session, `None`)
     return res.redirect("/")
 }

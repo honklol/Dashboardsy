@@ -3,6 +3,7 @@ import { executeQuery } from '../../../db'
 import config from '../../../config.json'
 import Axios from 'axios'
 import { setCache, getCache } from '../../../lib/cache'
+import { sendLog } from '../../../webhook';
 
 export default async function handler(req, res) {
     if (req.method !== 'GET') {
@@ -40,6 +41,7 @@ export default async function handler(req, res) {
         return res.status(429).json({ message: '429 Ratelimited', error: true })
     }
     await setCache(`ratelimit:${session.sub}`, true, 900);
+    await sendLog("Regenerated Password", session, `None`)
     return res.status(200).json({ message: '200 OK', error: false, data: { password: generated_pass } })
 }
 

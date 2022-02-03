@@ -1,6 +1,7 @@
 import { getToken } from "next-auth/jwt"
 import { executeQuery } from '../../../db'
 import config from '../../../config.json'
+import { sendLog } from '../../../webhook';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -37,5 +38,6 @@ export default async function handler(req, res) {
     if (sqlrs == false) {
         return res.status(500).json({ message: '500 Internal Server Error', error: true });
     }
+    await sendLog("Buy Resource", session, `${qntity} of ${req.body.resource.name}`)
     return res.status(200).json({ "message": "200 OK", error: false });
 }

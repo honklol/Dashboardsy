@@ -73,5 +73,9 @@
       "_comment2": "if true, the suspended servers will be deleted after the days you mentioned below if the user still doesn not have enough coins",
       "automaticallydeleteservers": false,
       "deleteserverafterhowmanydays": 7 
+   },
+   "auditlogs": {
+      "enabled": false,
+      "discordwebhookurl": ""
    }
 }
