@@ -80,7 +80,7 @@
    },
    "ads": {
       "adsense": {
-         "enabled": true,
+         "enabled": false,
          "dataaddclient": "",
          "dataaddslot": ""
       }
