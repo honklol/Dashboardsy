@@ -50,13 +50,14 @@ import { RiUDiskFill, RiLockPasswordLine } from 'react-icons/ri'
 import { GoServer } from 'react-icons/go'
 import React from "react";
 import config from '../config.json'
+import Script from 'next/script'
 
 export default function Swibc(prps) {
     const sidebar = useDisclosure();
     let sname, mem, cpu, disk, egg, loc;
     const integrations = useDisclosure();
     const { username, avatar, children, createServerFunc, buyItemFunc, regenPass, uinfo, notify, coinsleaderboard } = prps;
-
+    config.ads.adsense.enabled ? React.useEffect(() => { (window.adsbygoogle = window.adsbygoogle || []).push({}); }, []) : null
     const { isOpen: isOpenCS, onOpen: onOpenCS, onClose: onCloseCS } = useDisclosure()
     const finalRefCS = React.useRef()
     const handleChangeServerName = (event) => sname = event.target.value
@@ -373,14 +374,14 @@ export default function Swibc(prps) {
                             <Divider my={2} />
                             {coinsleaderboard && coinsleaderboard.length > 0 ? coinsleaderboard.map((user, index) => {
                                 return (
-                                <>
+                                    <Box key={index}>
                                         <Flex key={index} justifyContent='space-between' mx={10}>
-                                            <span>#{index+1}</span>
+                                            <span>#{index + 1}</span>
                                             <span>{user.uid}</span>
                                             <span>{user.coins}</span>
                                         </Flex>
-                                        {coinsleaderboard.length-1 != index ? <Divider my={2} /> : null}
-                                </>
+                                        {coinsleaderboard.length - 1 != index ? <Divider my={2} /> : null}
+                                    </Box>
                                 )
                             }
                             ) : "No users yet"}
@@ -402,6 +403,7 @@ export default function Swibc(prps) {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <title>{config.name}</title>
                 <link rel="icon" href="/favicon.png" />
+                {config.ads.adsense.enabled && <Script data-ad-client={config.ads.adsense.dataaddclient} async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" crossOrigin="anonymous" />}
             </Head>
             <Box
                 as="section"
@@ -453,6 +455,13 @@ export default function Swibc(prps) {
 
                     <Box as="main" p="4" rounded="md" h="full">
                         {children}
+                        {config.ads.adsense.enabled && <ins className="adsbygoogle"
+                            style={{ display: 'flex' }}
+                            data-ad-client={config.ads.adsense.dataaddclient}
+                            data-ad-slot={config.ads.adsense.dataaddslot}
+                            data-ad-format="auto"
+                            data-full-width-responsive="true">
+                        </ins>}
                     </Box>
                 </Box>
             </Box>
