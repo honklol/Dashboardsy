@@ -29,7 +29,9 @@ export default async function handler(req, res) {
             "Accept": "application/json",
             "Authorization": `Bearer ${config.panel_apikey}`
         }
-    }).catch(e => { return res.status(400).json({ message: "An account with this email or username already exists, or the api key is invalid.", error: true }) });
+    }).catch(e => { 
+        return res.status(500).json({ message: "An account with this email or username already exists, or the api key is invalid.", error: true, verbose: e.response.data.errors[0].detail })
+     });
     const pterouid = pterores.data.attributes.id;
     const sqlres = await executeQuery("SELECT * FROM resources WHERE uid = ?", [session.sub]);
     if (sqlres === false || sqlres.length === 0) {
