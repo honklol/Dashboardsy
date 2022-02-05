@@ -82,9 +82,7 @@ Then run `EDITOR=nano crontab -e` and paste the following line over there:
 ## Updating
 Updating dashboardsy is simple, just cd to the directory where you cloned it, run   
 ```sh
-git pull
-npm run build
-pm2 restart dashboardsy
+scripts/update.sh
 ```   
 That's it!
 ## File Structure
