@@ -9,7 +9,7 @@ mv next.config.js next.config.js.backup
 
 git pull
 lastCmtMessage=$(git log -1 --pretty=%B)
-if [[ "$lastCmtMessage" != *"config"* ]]; then
+if [[ "$lastCmtMessage" == *"config"* ]]; then
   echo "You will have to merge your config.json and next.config.js files manually. They have been backed up as next.config.js.backup and config.json.backup"
   echo -e "\nAfter you have done that, run the following commands."
   echo "npm run build"
