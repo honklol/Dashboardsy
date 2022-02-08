@@ -93,12 +93,18 @@ That's it!
 │   ├── Layout.js
 │   └── Table.js
 ├── lib
+│   ├── routes
+│   │   ├── userCoinsUpdate.js
+│   │   ├── userInfo.js
+│   │   └── userResourcesUpdate.js
 │   ├── cache.js
 │   └── useIsTouchDevice.js
 ├── pages
 │   ├── api
 │   │   ├── admin
-│   │   │   ├── addCoins.js
+│   │   │   ├── user
+│   │   │   │   └── [userid].js
+│   │   │   ├── cron.js
 │   │   │   └── _middleware.js
 │   │   ├── auth
 │   │   │   └── [...nextauth].js
@@ -114,16 +120,18 @@ That's it!
 │   └── _middleware.js
 ├── public
 │   └── favicon.png
+├── scripts
+│   └── update.sh
 ├── config.json
 ├── db.js
 ├── LICENSE
 ├── next.config.js
 ├── package.json
-├── package-lock.json
 ├── README.md
-└── theme.js
+├── theme.js
+└── webhook.js
 
-8 directories, 26 files
+11 directories, 31 files
 ```
 
 ## Disclaimer
