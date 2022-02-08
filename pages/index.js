@@ -9,7 +9,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useState } from 'react';
 import Layout from '../components/Layout';
-
+import Axios from 'axios';
 
 export default function index(pgProps) {
     const { username, avatar, servers, uinfo, renewalservers, deletionservers, coinsleaderboard } = pgProps;
@@ -220,7 +220,7 @@ export async function getServerSideProps({ req, res }) {
             disk: disk - useddisk
         }
     }
-    if (uinfo.used.cpu > uinfo.cpu || uinfo.used.memory > uinfo.memory || uinfo.used.disk > uinfo.disk || uinfo.used.serverlimit > uinfo.serverlimit) {
+    if (uinfo.used.cpu < uinfo.cpu || uinfo.used.memory < uinfo.memory || uinfo.used.disk < uinfo.disk || uinfo.used.serverlimit < uinfo.serverlimit) {
         servers.forEach(async s => {
             const suspendres = await Axios.post(`https://${config.panel_url}/api/application/servers/${s.attributes.id}/suspend`, {}, {
                 headers: {
