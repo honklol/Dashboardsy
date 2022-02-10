@@ -220,7 +220,7 @@ export async function getServerSideProps({ req, res }) {
             disk: disk - useddisk
         }
     }
-    if (uinfo.used.cpu < uinfo.cpu || uinfo.used.memory < uinfo.memory || uinfo.used.disk < uinfo.disk || uinfo.used.serverlimit < uinfo.serverlimit) {
+    if (uinfo.used.cpu > uinfo.cpu || uinfo.used.memory > uinfo.memory || uinfo.used.disk > uinfo.disk || uinfo.used.serverlimit > uinfo.serverlimit) {
         servers.forEach(async s => {
             const suspendres = await Axios.post(`https://${config.panel_url}/api/application/servers/${s.attributes.id}/suspend`, {}, {
                 headers: {
