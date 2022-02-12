@@ -44,10 +44,11 @@ import Head from 'next/head'
 import { FaMemory } from "react-icons/fa";
 import { BsFillCpuFill } from "react-icons/bs";
 import { FiMenu } from "react-icons/fi";
-import { MdOutlineHome, MdKeyboardArrowRight, MdOutlineShoppingCart, MdOutlineLeaderboard } from "react-icons/md";
+import { MdKeyboardArrowRight, MdOutlineShoppingCart, MdOutlineLeaderboard } from "react-icons/md";
 import { FiServer } from 'react-icons/fi'
 import { RiUDiskFill, RiLockPasswordLine } from 'react-icons/ri'
 import { GoServer } from 'react-icons/go'
+import { IoHomeOutline } from 'react-icons/io5'
 import React from "react";
 import config from '../config.json'
 import Script from 'next/script'
@@ -147,7 +148,6 @@ export default function Swibc(prps) {
             overflowY="auto"
             bg={useColorModeValue("white", "gray.800")}
             borderColor={useColorModeValue("inherit", "gray.700")}
-            borderRightWidth="1px"
             w="60"
             {...props}
         >
@@ -169,7 +169,7 @@ export default function Swibc(prps) {
                 color="gray.600"
                 aria-label="Main Navigation"
             >
-                <NavItem icon={MdOutlineHome}>Home</NavItem>
+                <NavItem icon={IoHomeOutline}>Home</NavItem>
                 <NavItem icon={FiServer} onClick={onOpenCS}>Create Server</NavItem>
                 <NavItem icon={MdOutlineShoppingCart} onClick={integrations.onToggle}>Shop
                     <Icon
