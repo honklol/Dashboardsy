@@ -210,7 +210,7 @@ export default function Component(props) {
                   <AlertDialog
                     isOpen={isOpen}
                     leastDestructiveRef={cancelRef}
-                    onClose={onClose}
+                    onClose={() => setIsOpen(false)}
                   >
                     <AlertDialogOverlay>
                       <AlertDialogContent>

@@ -14,6 +14,10 @@ export default async function handler(req, res) {
         secret: process.env.SECRET_COOKIE_PASSWORD,
         secureCookie: process.env.NEXTAUTH_URL.startsWith('https://')
     })
+    const ratelimitexists = await getCache(`ratelimit:${session.sub}`);
+    if (ratelimitexists != false) {
+        return res.status(429).json({ message: '429 Ratelimited', error: true })
+    }
     const sqlr = await executeQuery("SELECT * FROM resources WHERE uid = ?", [session.sub]);
     if (sqlr == false || sqlr.length == 0) {
         return res.status(500).json({ message: '500 Internal Server Error', error: true })
@@ -36,10 +40,6 @@ export default async function handler(req, res) {
         console.error(e.response.data.errors)
         return res.status(500).json({ message: '500 Internal Server Error', error: true })
     });
-    const ratelimitexists = await getCache(`ratelimit:${session.sub}`);
-    if (ratelimitexists != false) {
-        return res.status(429).json({ message: '429 Ratelimited', error: true })
-    }
     await setCache(`ratelimit:${session.sub}`, true, 900);
     await sendLog("Regenerated Password", session, `None`)
     return res.status(200).json({ message: '200 OK', error: false, data: { password: generated_pass } })

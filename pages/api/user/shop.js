@@ -1,6 +1,7 @@
 import { getToken } from "next-auth/jwt"
 import { executeQuery } from '../../../db'
 import config from '../../../config.json'
+import { delCache, setCache, getCache } from '../../../lib/cache'
 import { sendLog } from '../../../webhook';
 
 export default async function handler(req, res) {
@@ -12,6 +13,11 @@ export default async function handler(req, res) {
         secret: process.env.SECRET_COOKIE_PASSWORD,
         secureCookie: process.env.NEXTAUTH_URL.startsWith('https://')
     })
+    const isRateLimited = await getCache(`ratelimitsuserapi:${session.sub}`)
+    if (isRateLimited != false) {
+        return res.status(429).json({ message: '429 Too Many Requests (RateLimited)', error: true });
+    }
+    await setCache(`ratelimitsuserapi:${session.sub}`, true, 5)
     if (!req.body.resource.quantity || !req.body.resource.name) {
         return res.status(400).json({ message: 'Invalid Data', error: true });
     }

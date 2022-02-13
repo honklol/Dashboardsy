@@ -2,6 +2,7 @@ import { getToken } from "next-auth/jwt"
 import { executeQuery, getServers } from '../../../db'
 import config from '../../../config.json'
 import Axios from 'axios'
+import { delCache, setCache, getCache } from '../../../lib/cache'
 import { sendLog } from '../../../webhook';
 
 export default async function handler(req, res) {
@@ -16,6 +17,11 @@ export default async function handler(req, res) {
         secret: process.env.SECRET_COOKIE_PASSWORD,
         secureCookie: process.env.NEXTAUTH_URL.startsWith('https://')
     })
+    const isRateLimited = await getCache(`ratelimitsuserapi:${session.sub}`)
+    if (isRateLimited != false) {
+        return res.status(429).json({ message: '429 Too Many Requests (RateLimited)', error: true });
+    }
+    await setCache(`ratelimitsuserapi:${session.sub}`, true, 5)
     const sqlres = await executeQuery("SELECT * FROM resources WHERE uid = ?", [session.sub]);
     if (sqlres === false || sqlres.length === 0) {
         return res.status(500).json({ message: '500 Internal Server Error', error: true });
