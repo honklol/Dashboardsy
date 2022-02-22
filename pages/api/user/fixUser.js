@@ -35,7 +35,7 @@ export default async function handler(req, res) {
             "Accept": "application/json",
             "Authorization": `Bearer ${config.panel_apikey}`
         }
-    })
+    }).catch(e => {})
     if (!pterores) return res.status(500).json({ message: '500 Internal Server Error (Pterodactyl api)', error: true });
     if (pterores && !pterores.data && pterores.response) {
         return res.status(500).json({ message: "An account with this email or username already exists, or the api key is invalid.", error: true, verbose: pterores.response.data.errors[0].detail })
