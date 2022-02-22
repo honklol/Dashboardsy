@@ -1,8 +1,11 @@
 import { getToken } from "next-auth/jwt"
 import { NextResponse } from "next/server"
+import config from "../config.json";
 
 export async function middleware(req) {
-
+    if (config.panel_url.startsWith("http")) {
+        return new Response("Panel URL should not contain https:// or http://", { status: 500 });
+    }
     const session = await getToken({
         req,
         secret: process.env.SECRET_COOKIE_PASSWORD,
