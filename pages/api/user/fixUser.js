@@ -23,7 +23,8 @@ export default async function handler(req, res) {
     if (sqlr.length !== 0) {
         return res.redirect("/");
     }
-    let pterores = await Axios.post(`https://${config.panel_url}/api/application/users`, {
+    let pterores;
+    pterores = await Axios.post(`https://${config.panel_url}/api/application/users`, {
         "email": session.email,
         "username": session.sub,
         "first_name": session.name,
