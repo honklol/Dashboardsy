@@ -1,7 +1,6 @@
 import { getToken } from "next-auth/jwt"
 import { executeQuery } from '../../../db'
 import config from '../../../config.json'
-import { delCache, setCache, getCache } from '../../../lib/cache'
 import Axios from 'axios'
 import { sendLog } from '../../../webhook';
 
@@ -24,19 +23,23 @@ export default async function handler(req, res) {
         return res.redirect("/");
     }
     let pterores;
-    pterores = await Axios.post(`https://${config.panel_url}/api/application/users`, {
-        "email": session.email,
-        "username": session.sub,
-        "first_name": session.name,
-        "last_name": session.name,
-        "root_admin": false
-    }, {
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Authorization": `Bearer ${config.panel_apikey}`
-        }
-    }).catch(e => { pterores = e })
+    try {
+        pterores = await Axios.post(`https://${config.panel_url}/api/application/users`, {
+            "email": session.email,
+            "username": session.sub,
+            "first_name": session.name,
+            "last_name": session.name,
+            "root_admin": false
+        }, {
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": `Bearer ${config.panel_apikey}`
+            }
+        })
+    } catch(e) {
+        pterores = e;
+    }
     if (!pterores) return res.status(500).json({ message: '500 Internal Server Error (Pterodactyl api)', error: true });
     if (pterores && !pterores.data && pterores.response) {
         return res.status(500).json({ message: "An account with this email or username already exists, or the api key is invalid.", error: true, verbose: pterores.response.data.errors[0].detail })
