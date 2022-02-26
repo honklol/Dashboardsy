@@ -22,28 +22,19 @@ export default async function handler(req, res) {
     if (sqlr.length !== 0) {
         return res.redirect("/");
     }
-    let pterores;
-    try {
-        pterores = await Axios.post(`https://${config.panel_url}/api/application/users`, {
-            "email": session.email,
-            "username": session.sub,
-            "first_name": session.name,
-            "last_name": session.name,
-            "root_admin": false
-        }, {
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "Authorization": `Bearer ${config.panel_apikey}`
-            }
-        })
-    } catch(e) {
-        pterores = e;
-    }
-    if (!pterores) return res.status(500).json({ message: '500 Internal Server Error (Pterodactyl api)', error: true });
-    if (pterores && !pterores.data && pterores.response) {
-        return res.status(500).json({ message: "An account with this email or username already exists, or the api key is invalid.", error: true, verbose: pterores.response.data.errors[0].detail })
-    }
+    const pterores = await Axios.post(`https://${config.panel_url}/api/application/users`, {
+        "email": session.email,
+        "username": session.sub,
+        "first_name": session.name,
+        "last_name": session.name,
+        "root_admin": false
+    }, {
+        headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${config.panel_apikey}`
+        }
+    }).catch(e => res.status(400).json({ message: "An account with this email or username already exists, or the api key is invalid.", error: true }));
     const pterouid = pterores.data.attributes.id;
     const sqlres = await executeQuery("SELECT * FROM resources WHERE uid = ?", [session.sub]);
     if (sqlres === false || sqlres.length === 0) {
